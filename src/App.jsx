@@ -33,6 +33,13 @@ const scaleIn = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.45, ease: "easeOut" } },
 };
 
+const getAssetUrl = (path) => {
+  const clean = path.startsWith("/") ? path.slice(1) : path;
+  if (typeof window === "undefined") return `/${clean}`;
+  const currentPath = window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
+  return `${currentPath}/${clean}`;
+};
+
 function AnimatedSection({ children, className = "", variants = fadeUp }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
@@ -82,7 +89,7 @@ function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-20">
           <a className="flex items-center gap-2.5 sm:gap-3 group" href="#beranda">
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#1B3B2B] to-[#032517] flex items-center justify-center shadow-md border border-[#83A590]/30 group-hover:scale-105 transition-transform overflow-hidden p-1.5">
-              <img src="./ranum-kopi.svg" alt="Ranum Logo" className="w-full h-full object-contain" />
+              <img src={getAssetUrl("ranum-kopi.svg")} alt="Ranum Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#FCF9F3] block leading-tight">
@@ -232,7 +239,7 @@ function PhoneMockup() {
       {/* Frame Flutter Web Interaktif */}
       <div className="w-full h-full rounded-[32px] sm:rounded-[38px] overflow-hidden bg-[#FCF9F3] relative shadow-inner">
         <iframe
-          src="./app-web/index.html"
+          src={getAssetUrl("app-web/index.html")}
           title="Ranum Live App"
           className="w-full h-full border-0"
         />
@@ -662,7 +669,7 @@ function Demo() {
             {/* Iframe Flutter Web App */}
             <div className="w-full h-full rounded-[32px] sm:rounded-[38px] overflow-hidden bg-[#FCF9F3] relative shadow-inner">
               <iframe
-                src="./app-web/index.html"
+                src={getAssetUrl("app-web/index.html")}
                 title="Aplikasi Asli Flutter Ranum Coffee Ripeness"
                 className="w-full h-full border-0"
               />
@@ -706,7 +713,7 @@ function Unduh() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 pb-6 sm:pb-8 border-b border-white/15">
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#1B3B2B] to-[#032517] flex items-center justify-center shadow-xl border border-[#83A590]/30 shrink-0 overflow-hidden p-2">
-                <img src="./ranum-kopi.svg" alt="Ranum Logo" className="w-full h-full object-contain" />
+                <img src={getAssetUrl("ranum-kopi.svg")} alt="Ranum Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white">Ranum Mobile App</h3>
@@ -721,7 +728,7 @@ function Unduh() {
               </div>
             </div>
             <a
-              href={APP_CONFIG.apkDownloadUrl}
+              href={APP_CONFIG.apkDownloadUrl.startsWith("http") ? APP_CONFIG.apkDownloadUrl : getAssetUrl(APP_CONFIG.apkDownloadUrl)}
               download="ranum.apk"
               className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-[#C0392B] hover:bg-[#a5281b] text-white font-bold text-sm sm:text-base shadow-xl shadow-[#C0392B]/40 hover:shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-2.5"
             >
@@ -742,7 +749,7 @@ function Unduh() {
                 </p>
               </div>
               <a
-                href={APP_CONFIG.apkDownloadUrl}
+                href={APP_CONFIG.apkDownloadUrl.startsWith("http") ? APP_CONFIG.apkDownloadUrl : getAssetUrl(APP_CONFIG.apkDownloadUrl)}
                 download="ranum.apk"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs border border-white/20 transition-all hover:scale-[1.02] w-full sm:w-auto"
               >
@@ -893,7 +900,7 @@ function Footer() {
           <div className="space-y-3 sm:space-y-4 sm:col-span-2">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-[#1B3B2B] border border-[#83A590]/40 flex items-center justify-center overflow-hidden p-1.5">
-                <img src="./ranum-kopi.svg" alt="Ranum Logo" className="w-full h-full object-contain" />
+                <img src={getAssetUrl("ranum-kopi.svg")} alt="Ranum Logo" className="w-full h-full object-contain" />
               </div>
               <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-white">Ranum</span>
             </div>
