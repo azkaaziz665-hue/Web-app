@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>INCO – Deteksi Kematangan Buah Kopi Cerdas berbasis YOLOv8</title>
+    <meta
+        content="Aplikasi cerdas pemantau kematangan buah kopi secara otomatis di perkebunan dengan kamera statis dan AI YOLOv8."
+        name="description" />
+    <!-- Open Graph -->
+    <meta content="INCO – Deteksi Kematangan Buah Kopi AI" property="og:title" />
+    <meta content="Maksimalkan kualitas panen kopi dengan deteksi kematangan presisi tinggi berbasis AI YOLOv8."
+        property="og:description" />
+    <meta content="website" property="og:type" />
+    <!-- Google Fonts & Tailwind -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coffee: {
+                            dark: '#3E2723',
+                            mid: '#5D4037',
+                            light: '#6D4C41',
+                            cream: '#F7F2EC',
+                            creamDark: '#EDE3D8'
+                        },
+                        leaf: {
+                            DEFAULT: '#2E7D32',
+                            dark: '#1B5E20',
+                            light: '#4CAF50',
+                            soft: '#E8F5E9'
+                        },
+                        berry: {
+                            red: '#C62828',
+                            orange: '#E65100',
+                            yellow: '#F9A825',
+                            green: '#2E7D32'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Utilities */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(109, 76, 65, 0.12);
+        }
+
+        .hero-pattern {
+            background-color: #3E2723;
+            background-image: radial-gradient(#5D4037 1px, transparent 1px), radial-gradient(#5D4037 1px, #3E2723 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        .badge-pulsing {
+            box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.7);
+            animation: pulse-ring 2s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+
+        @keyframes pulse-ring {
+            to {
+                box-shadow: 0 0 0 12px rgba(198, 40, 40, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-coffee-cream text-[#2D241E] font-sans antialiased selection:bg-berry-red selection:text-white">
+    <!-- ========================================== -->
+    <!-- 0. CONFIG SCRIPT JAVASCRIPT GLOBAL         -->
+    <!-- ========================================== -->
+    <script>
+        const APP_CONFIG = {
+            appName: "INCO – Coffee Ripeness AI",
+            version: "v1.2.0-beta",
+            releaseDate: "12 Mei 2025",
+            apkSize: "28.4 MB",
+            apkDownloadUrl: "https://github.com/inco-coffee/app/releases/download/v1.2.0/inco-release.apk", // Ganti link APK Anda
+            demoUrl: "https://example.com/inco-app-demo", // Ganti dengan URL aplikasi web Anda
+            developer: {
+                name: "Tim Riset Inovasi Kopi & AI",
+                institution: "Fakultas Teknologi Pertanian / Lab Informatika",
+                email: "kontak@inco-coffee.id",
+                github: "https://github.com/inco-coffee",
+                instagram: "https://instagram.com/inco.coffeeai"
+            }
+        };
+    </script>
+    <!-- ========================================== -->
+    <!-- 1. STICKY NAVBAR                           -->
+    <!-- ========================================== -->
+    <header
+        class="sticky top-0 z-50 bg-[#3E2723]/95 backdrop-blur-md text-white border-b border-[#5D4037]/60 shadow-lg transition-all duration-300"
+        id="main-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo -->
+                <a class="flex items-center gap-3 group" href="#beranda">
+                    <div
+                        class="w-11 h-11 rounded-xl bg-gradient-to-br from-berry-red to-[#8E0000] flex items-center justify-center text-white font-bold text-xl shadow-md border border-white/20 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <div>
+                        <span
+                            class="font-serif text-2xl font-bold tracking-tight text-coffee-cream block leading-tight">INCO</span>
+                        <span class="text-[10px] tracking-widest uppercase text-berry-red font-semibold block">Coffee
+                            Ripeness AI</span>
+                    </div>
+                </a>
+                <!-- Desktop Menu Nav -->
+                <nav class="hidden md:flex items-center space-x-7 text-sm font-medium text-coffee-cream/80">
+                    <a class="hover:text-white transition-colors" href="#beranda">Beranda</a>
+                    <a class="hover:text-white transition-colors" href="#tujuan">Tujuan</a>
+                    <a class="hover:text-white transition-colors" href="#fitur">Fitur</a>
+                    <a class="hover:text-white transition-colors" href="#cara-kerja">Cara Kerja</a>
+                    <a class="hover:text-white transition-colors" href="#kematangan">Kematangan</a>
+                    <a class="hover:text-white transition-colors" href="#demo">Demo</a>
+                    <a class="hover:text-white transition-colors" href="#faq">FAQ</a>
+                </nav>
+                <!-- CTA Action -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a class="bg-berry-red hover:bg-[#a51d1d] text-white px-5 py-2.5 rounded-full text-sm font-semibold shadow-md shadow-berry-red/30 hover:shadow-lg transition-all flex items-center gap-2"
+                        href="#unduh">
+                        <i class="fa-solid fa-download text-xs"></i> Unduh Aplikasi
+                    </a>
+                </div>
+                <!-- Mobile Menu Toggle Button -->
+                <button aria-label="Buka Menu" class="md:hidden text-white text-2xl focus:outline-none p-2"
+                    id="mobileMenuBtn">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Dropdown -->
+        <div class="hidden md:hidden bg-[#3E2723] border-b border-[#5D4037] px-6 py-5 space-y-3" id="mobileMenu">
+            <a class="block text-coffee-cream hover:text-white py-1" href="#beranda">Beranda</a>
+            <a class="block text-coffee-cream hover:text-white py-1" href="#tujuan">Tujuan &amp; Solusi</a>
+            <a class="block text-coffee-cream hover:text-white py-1" href="#fitur">Fitur Utama</a>
+            <a class="block text-coffee-cream hover:text-white py-1" href="#cara-kerja">Cara Kerja</a>
+            <a class="block text-coffee-cream hover:text-white py-1" href="#kematangan">Klasifikasi Kematangan</a>
+            <a class="block text-coffee-cream hover:text-white py-1" href="#demo">Live Demo</a>
+            <a class="block bg-berry-red text-center py-2.5 rounded-xl font-bold text-white mt-4" href="#unduh">Unduh
+                Aplikasi</a>
+        </div>
+    </header>
+    <!-- ========================================== -->
+    <!-- 2. HERO SECTION                            -->
+    <!-- ========================================== -->
+    <section class="relative hero-pattern text-white py-20 lg:py-28 overflow-hidden" id="beranda">
+        <!-- Atmospheric glows -->
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-berry-red/20 rounded-full blur-3xl pointer-events-none">
+        </div>
+        <div class="absolute top-1/2 -right-32 w-96 h-96 bg-leaf/25 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                <!-- Text Left -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div
+                        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-coffee-cream font-medium">
+                        <span class="w-2 h-2 rounded-full bg-leaf-light animate-ping"></span>
+                        <span>Didukung Model Computer Vision YOLOv8</span>
+                    </div>
+                    <h1
+                        class="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-white tracking-tight">
+                        Panen Kopi di Waktu yang Tepat, <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A80] to-[#FF5252]">Dipandu
+                            AI Presisi</span>
+                    </h1>
+                    <p class="text-base sm:text-lg text-coffee-cream/85 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Deteksi otomatis tingkat kematangan ceri kopi (mentah, setengah matang, matang, dan lewat
+                        matang) menggunakan kamera statis di kebun. Cegah panen asal petik dan maksimalkan harga jual
+                        biji kopi premium Anda.
+                    </p>
+                    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                        <a class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-berry-red hover:bg-[#a51d1d] text-white font-semibold text-base shadow-xl shadow-berry-red/40 transition-all flex items-center justify-center gap-3 group"
+                            href="#unduh">
+                            <i class="fa-solid fa-mobile-screen-button group-hover:scale-110 transition-transform"></i>
+                            <span>Unduh / Pasang PWA</span>
+                        </a>
+                        <a class="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold text-base transition-all flex items-center justify-center gap-2"
+                            href="#demo">
+                            <i class="fa-solid fa-play text-xs text-leaf-light"></i>
+                            <span>Coba Demo Online</span>
+                        </a>
+                    </div>
+                    <!-- Highlight Key Stats -->
+                    <div class="pt-8 grid grid-cols-3 gap-4 border-t border-white/15 max-w-lg mx-auto lg:mx-0">
+                        <div>
+                            <div class="text-2xl font-bold font-serif text-white">Real-Time</div>
+                            <div class="text-xs text-coffee-cream/70 mt-0.5">Analisis Langsung</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold font-serif text-leaf-light">[XX%]</div>
+                            <div class="text-xs text-coffee-cream/70 mt-0.5">Akurasi Deteksi</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold font-serif text-[#FFAB91]">4 Kelas</div>
+                            <div class="text-xs text-coffee-cream/70 mt-0.5">Level Kematangan</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Phone Mockup Right -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div
+                        class="relative w-[290px] sm:w-[320px] aspect-[9/19] rounded-[48px] bg-[#1a110e] p-3 shadow-2xl border-[4px] border-[#6D4C41]/80 ring-1 ring-white/20">
+                        <!-- Notch -->
+                        <div class="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-5 bg-black rounded-full z-30"></div>
+                        <!-- Screen inner -->
+                        <div
+                            class="w-full h-full bg-[#2A1B17] rounded-[38px] overflow-hidden flex flex-col justify-between relative border border-white/10">
+                            <!-- Top bar simulator -->
+                            <div
+                                class="pt-8 px-5 pb-3 flex justify-between items-center text-[11px] text-white/70 bg-black/30">
+                                <span>09:41</span>
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-wifi"></i> <i
+                                        class="fa-solid fa-battery-full"></i></span>
+                            </div>
+                            <!-- Main Simulated UI -->
+                            <div class="px-4 py-2 space-y-3 flex-1 flex flex-col justify-between">
+                                <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                                    <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-berry-red"></span> Cam-01 Kebun Blok A
+                                    </div>
+                                    <span
+                                        class="text-[10px] bg-leaf/40 text-leaf-light px-2 py-0.5 rounded-full font-mono">ONLINE</span>
+                                </div>
+                                <!-- Live Camera View Simulation with YOLO Bounding Boxes -->
+                                <div
+                                    class="relative rounded-2xl overflow-hidden aspect-[4/3] bg-neutral-900 border border-white/10 shadow-inner flex items-center justify-center group">
+                                    <!-- Simulated Coffee Branch Graphic -->
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-tr from-[#1B5E20]/40 to-[#3E2723]/70 flex items-center justify-center">
+                                        <i class="fa-solid fa-camera text-4xl text-white/20"></i>
+                                    </div>
+                                    <!-- Bounding Box 1: Matang -->
+                                    <div
+                                        class="absolute top-4 left-6 border-2 border-berry-red bg-berry-red/20 rounded p-1 text-[9px] font-mono text-white font-bold">
+                                        <span class="bg-berry-red px-1 rounded-sm text-[8px]">Matang 94%</span>
+                                    </div>
+                                    <!-- Bounding Box 2: Setengah Matang -->
+                                    <div
+                                        class="absolute bottom-5 left-12 border-2 border-berry-orange bg-berry-orange/20 rounded p-1 text-[9px] font-mono text-white font-bold">
+                                        <span class="bg-berry-orange px-1 rounded-sm text-[8px]">Setengah 88%</span>
+                                    </div>
+                                    <!-- Bounding Box 3: Mentah -->
+                                    <div
+                                        class="absolute top-8 right-6 border-2 border-leaf-light bg-leaf-light/20 rounded p-1 text-[9px] font-mono text-white font-bold">
+                                        <span class="bg-leaf-light text-black px-1 rounded-sm text-[8px]">Mentah
+                                            91%</span>
+                                    </div>
+                                </div>
+                                <!-- Detection Statistics summary -->
+                                <div class="bg-white/10 rounded-xl p-3 border border-white/10 space-y-2">
+                                    <div class="text-[11px] font-semibold text-white/90">Kepadatan Kematangan:</div>
+                                    <div class="grid grid-cols-4 gap-1 text-center">
+                                        <div class="bg-leaf/30 rounded p-1 text-[9px]">
+                                            <span class="block text-leaf-light font-bold">18</span>
+                                            <span class="text-[8px] text-white/70">Mentah</span>
+                                        </div>
+                                        <div class="bg-berry-orange/30 rounded p-1 text-[9px]">
+                                            <span class="block text-amber-300 font-bold">9</span>
+                                            <span class="text-[8px] text-white/70">Setengah</span>
+                                        </div>
+                                        <div class="bg-berry-red/40 rounded p-1 text-[9px] ring-1 ring-berry-red">
+                                            <span class="block text-red-200 font-bold">42</span>
+                                            <span class="text-[8px] text-white/80 font-bold">Matang</span>
+                                        </div>
+                                        <div class="bg-amber-950/60 rounded p-1 text-[9px]">
+                                            <span class="block text-stone-300 font-bold">3</span>
+                                            <span class="text-[8px] text-white/70">Over</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Recommendation Banner -->
+                                <div
+                                    class="bg-gradient-to-r from-berry-red/40 to-leaf/30 border border-berry-red/40 rounded-xl p-2.5 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check text-berry-red text-sm"></i>
+                                    <div class="text-[10px] text-white leading-tight">
+                                        <span class="font-bold block">Siap Panen Optimal!</span>
+                                        61% buah sudah matang sempurna (ceri merah).
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Home indicator -->
+                            <div class="pb-2 flex justify-center">
+                                <div class="w-24 h-1 bg-white/40 rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 3. TUJUAN APLIKASI (MASALAH & SOLUSI)     -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-coffee-cream" id="tujuan">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs uppercase tracking-widest text-berry-red font-bold">Tujuan &amp; Urgensi</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark mt-2">
+                    Mengapa Deteksi Otomatis Penting bagi Petani Kopi?
+                </h2>
+                <div class="w-16 h-1 bg-leaf mx-auto mt-4 rounded-full"></div>
+                <p class="text-coffee-light mt-4 text-base leading-relaxed">
+                    Kualitas secangkir kopi berkelas ditentukan sejak di pohon. Metode konvensional seringkali menemui
+                    kendala subjektivitas pemetik yang merugikan hasil panen.
+                </p>
+            </div>
+            <!-- Problem vs Solution Comparison Card -->
+            <div class="grid md:grid-cols-2 gap-8 mb-16">
+                <!-- Problem Card -->
+                <div
+                    class="bg-white rounded-3xl p-8 shadow-md border-l-8 border-berry-red flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 text-berry-red font-bold text-lg mb-3">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                            <h3>Masalah Metode Manual Tradisional</h3>
+                        </div>
+                        <ul class="space-y-3 text-coffee-mid text-sm leading-relaxed mt-4">
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-xmark text-berry-red mt-1"></i>
+                                <span><strong>Subjektivitas Tinggi:</strong> Penentuan warna merah buah sering berbeda
+                                    antar pemetik, menyebabkan tercampurnya ceri mentah (green defect).</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-xmark text-berry-red mt-1"></i>
+                                <span><strong>Penurunan Skor Cupping:</strong> Ceri mentah dan lewat matang menurunkan
+                                    nilai rasa specialty coffee secara drastis di pasar global.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-xmark text-berry-red mt-1"></i>
+                                <span><strong>Pemborosan Biaya Tenaga Kerja:</strong> Panen sebelum saatnya menuntut
+                                    proses sortasi manual yang lama dan mahal.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-berry-red font-semibold">
+                        Dampak: Harga jual biji mentah (green bean) merosot hingga 20–30%.
+                    </div>
+                </div>
+                <!-- Solution Card -->
+                <div class="bg-white rounded-3xl p-8 shadow-md border-l-8 border-leaf flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 text-leaf font-bold text-lg mb-3">
+                            <i class="fa-solid fa-circle-check text-2xl"></i>
+                            <h3>Solusi Cerdas Bersama INCO</h3>
+                        </div>
+                        <ul class="space-y-3 text-coffee-mid text-sm leading-relaxed mt-4">
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-check text-leaf mt-1"></i>
+                                <span><strong>Standardisasi Berbasis Data:</strong> AI YOLOv8 menilai kematangan secara
+                                    objektif tanpa bias kelelahan manusia.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-check text-leaf mt-1"></i>
+                                <span><strong>Pemantauan Kontinu Tanpa Masuk Kebun:</strong> Kamera statis mengamati
+                                    kanopi tanaman secara periodik dari titik tetap.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-check text-leaf mt-1"></i>
+                                <span><strong>Keputusan Panen Tepat Waktu:</strong> Dapatkan notifikasi waktu petik
+                                    optimum saat mayoritas buah mencapai kondisi red cherry.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-leaf font-semibold">
+                        Dampak: Meningkatkan proporsi ceri merah prima hingga di atas 90%.
+                    </div>
+                </div>
+            </div>
+            <!-- 4 Manfaat Cards Grid -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-leaf-soft text-leaf flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h4 class="font-serif font-bold text-lg text-coffee-dark mb-2">Presisi Objektif</h4>
+                    <p class="text-sm text-coffee-light leading-relaxed">Model AI dilatih mengeliminasi keraguan warna
+                        buah pada kondisi pencahayaan alami kebun.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-berry-red/10 text-berry-red flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                    <h4 class="font-serif font-bold text-lg text-coffee-dark mb-2">Nilai Jual Maksimal</h4>
+                    <p class="text-sm text-coffee-light leading-relaxed">Meningkatkan rasio kopi petik merah untuk
+                        menembus standar Specialty Grade berharga tinggi.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <h4 class="font-serif font-bold text-lg text-coffee-dark mb-2">Efisiensi Tenaga Kerja</h4>
+                    <p class="text-sm text-coffee-light leading-relaxed">Jadwalkan buruh petik hanya saat pohon di blok
+                        tertentu memang telah siap panen serempak.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-[#EDE3D8] text-coffee-mid flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h4 class="font-serif font-bold text-lg text-coffee-dark mb-2">Arsip Digital Musim</h4>
+                    <p class="text-sm text-coffee-light leading-relaxed">Riwayat kematangan harian tersimpan sebagai
+                        bahan evaluasi agronomi dan riset musim tanam.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 4. FITUR UTAMA APLIKASI                    -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-white" id="fitur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs uppercase tracking-widest text-leaf font-bold">Kapabilitas Teknologi</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark mt-2">
+                    Fitur Utama Sistem Pemantauan INCO
+                </h2>
+                <div class="w-16 h-1 bg-berry-red mx-auto mt-4 rounded-full"></div>
+                <p class="text-coffee-light mt-4 text-base">
+                    Dirancang tangguh, ringan, dan mudah dioperasikan baik oleh kelompok tani di pelosok maupun peneliti
+                    agro-teknologi.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div
+                    class="border border-coffee-creamDark rounded-2xl p-7 hover:border-leaf transition-all hover:shadow-lg bg-coffee-cream/30 group">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-leaf text-white flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-coffee-dark mb-2">Deteksi Real-Time YOLOv8</h3>
+                    <p class="text-sm text-coffee-light leading-relaxed">
+                        Arsitektur deteksi objek generasi mutakhir yang mampu mengenali puluhan kelompok buah kopi
+                        secara simultan dalam satu tangkapan frame kamera.
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div
+                    class="border border-coffee-creamDark rounded-2xl p-7 hover:border-leaf transition-all hover:shadow-lg bg-coffee-cream/30 group">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-berry-red text-white flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-tags"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-coffee-dark mb-2">Klasifikasi 4 Tingkat Kematangan</h3>
+                    <p class="text-sm text-coffee-light leading-relaxed">
+                        Kategori terstandar: <em>Mentah (Hijau)</em>, <em>Setengah Matang (Kuning/Oranye)</em>,
+                        <em>Matang Penuh (Merah Ceri)</em>, dan <em>Lewat Matang (Hitam/Kering)</em>.
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div
+                    class="border border-coffee-creamDark rounded-2xl p-7 hover:border-leaf transition-all hover:shadow-lg bg-coffee-cream/30 group">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-coffee-mid text-white flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-coffee-dark mb-2">Integrasi Kamera Statis Kebun</h3>
+                    <p class="text-sm text-coffee-light leading-relaxed">
+                        Dukungan RTSP / HTTP snapshot dari modul kamera mikro (ESP32-CAM, Raspberry Pi, atau IP Cam
+                        bertenaga surya) yang terpasang tetap di tiang kebun.
+                    </p>
+                </div>
+                <!-- Feature 4 -->
+                <div
+                    class="border border-coffee-creamDark rounded-2xl p-7 hover:border-leaf transition-all hover:shadow-lg bg-coffee-cream/30 group">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-coffee-dark mb-2">Kalkulasi Otomatis Jumlah Buah</h3>
+                    <p class="text-sm text-coffee-light leading-relaxed">
+                        Sistem menghitung persentase agregat buah matang vs mentah dan menampilkan rekomendasi siap
+                        panen secara otomatis.
+                    </p>
+                </div>
+                <!-- Feature 5 -->
+                <div
+                    class="border border-coffee-creamDark rounded-2xl p-7 hover:border-leaf transition-all hover:shadow-lg bg-coffee-cream/30 group">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-teal-700 text-white flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-coffee-dark mb-2">Riwayat &amp; Log Deteksi Harian</h3>
+                    <p class="text-sm text-coffee-light leading-relaxed">
+                        Catatan log berkala untuk memantau laju pematangan buah dari hari ke hari sehingga petani dapat
+                        menjadwalkan rotasi blok panen.
+                    </p>
+                </div>
+                <!-- Feature 6 -->
+                <div
+                    class="border border-coffee-creamDark rounded-2xl p-7 hover:border-leaf transition-all hover:shadow-lg bg-coffee-cream/30 group">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-[#3E2723] text-white flex items-center justify-center text-xl mb-5 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-wifi-slash"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-coffee-dark mb-2">Dukungan PWA &amp; Mode Offline</h3>
+                    <p class="text-sm text-coffee-light leading-relaxed">
+                        Dapat dipasang langsung ke layar beranda ponsel (Android / iOS) dan tetap menyajikan data cache
+                        lokal saat sinyal di pedalaman kebun minim.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 5. CARA KERJA SISTEM (4-STEP PIPELINE)     -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-coffee-cream border-y border-coffee-creamDark" id="cara-kerja">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs uppercase tracking-widest text-berry-red font-bold">Alur Kerja Sistem</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark mt-2">
+                    Bagaimana AI Menjaga Kualitas Panen Anda?
+                </h2>
+                <div class="w-16 h-1 bg-leaf mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="grid md:grid-cols-4 gap-6 relative">
+                <!-- Step 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-coffee-creamDark relative">
+                    <div
+                        class="w-10 h-10 rounded-full bg-coffee-dark text-white font-bold flex items-center justify-center mb-4 text-sm">
+                        01
+                    </div>
+                    <div
+                        class="w-10 h-10 rounded-lg bg-leaf-soft text-leaf flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-lg text-coffee-dark mb-2">Pemasangan Kamera</h3>
+                    <p class="text-xs text-coffee-light leading-relaxed">
+                        Kamera dipasang statis di titik strategis blok kebun, menghadap ke dahan representatif dengan
+                        jarak dan sudut konstan.
+                    </p>
+                </div>
+                <!-- Step 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-coffee-creamDark relative">
+                    <div
+                        class="w-10 h-10 rounded-full bg-coffee-dark text-white font-bold flex items-center justify-center mb-4 text-sm">
+                        02
+                    </div>
+                    <div
+                        class="w-10 h-10 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-lg text-coffee-dark mb-2">Pengambilan Citra</h3>
+                    <p class="text-xs text-coffee-light leading-relaxed">
+                        Kamera menangkap frame foto berkala (misal: setiap jam 08.00 &amp; 14.00) dan mengirimkannya ke
+                        modul pemrosesan aplikasi.
+                    </p>
+                </div>
+                <!-- Step 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-coffee-creamDark relative">
+                    <div
+                        class="w-10 h-10 rounded-full bg-coffee-dark text-white font-bold flex items-center justify-center mb-4 text-sm">
+                        03
+                    </div>
+                    <div
+                        class="w-10 h-10 rounded-lg bg-berry-red/10 text-berry-red flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-lg text-coffee-dark mb-2">Inferensi YOLOv8</h3>
+                    <p class="text-xs text-coffee-light leading-relaxed">
+                        Model AI melacak tiap buah dalam gambar, memberi bounding box, dan mengklasifikasikan tingkat
+                        kematangan dalam sekejap.
+                    </p>
+                </div>
+                <!-- Step 4 -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-coffee-creamDark relative">
+                    <div
+                        class="w-10 h-10 rounded-full bg-berry-red text-white font-bold flex items-center justify-center mb-4 text-sm">
+                        04
+                    </div>
+                    <div
+                        class="w-10 h-10 rounded-lg bg-leaf-soft text-leaf flex items-center justify-center text-lg mb-3">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-lg text-coffee-dark mb-2">Rekomendasi Panen</h3>
+                    <p class="text-xs text-coffee-light leading-relaxed">
+                        Hasil tampil di layar petani lengkap dengan grafik kematangan dan notifikasi kesiapan panen
+                        untuk tim pemetik.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 6. PANDUAN PENGGUNAAN & TIPS KAMERA        -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                <!-- Steps Left -->
+                <div class="lg:col-span-6 space-y-6">
+                    <span class="text-xs uppercase tracking-widest text-leaf font-bold">Panduan Pengguna</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark">
+                        Langkah Cepat Memulai Penggunaan Aplikasi
+                    </h2>
+                    <p class="text-coffee-light text-sm leading-relaxed">
+                        Ikuti 3 tahapan ringkas berikut untuk menghubungkan modul deteksi kebun Anda ke aplikasi INCO.
+                    </p>
+                    <div class="space-y-4 pt-2">
+                        <div class="flex gap-4 p-4 rounded-xl bg-coffee-cream/40 border border-coffee-creamDark">
+                            <div
+                                class="w-8 h-8 rounded-full bg-berry-red text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                1</div>
+                            <div>
+                                <h4 class="font-bold text-coffee-dark text-sm">Buka Aplikasi &amp; Hubungkan Perangkat
+                                </h4>
+                                <p class="text-xs text-coffee-light mt-1">Buka aplikasi INCO, masuk ke menu
+                                    <em>Pengaturan Kamera</em>, masukkan IP atau URL stream kamera kebun Anda.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 rounded-xl bg-coffee-cream/40 border border-coffee-creamDark">
+                            <div
+                                class="w-8 h-8 rounded-full bg-berry-red text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                2</div>
+                            <div>
+                                <h4 class="font-bold text-coffee-dark text-sm">Lakukan Kalibrasi Titik Bidik</h4>
+                                <p class="text-xs text-coffee-light mt-1">Pastikan kluster buah kopi berada di area
+                                    tengah fokus lensa tanpa terhalang daun lebat.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 rounded-xl bg-coffee-cream/40 border border-coffee-creamDark">
+                            <div
+                                class="w-8 h-8 rounded-full bg-berry-red text-white flex items-center justify-center font-bold text-sm shrink-0">
+                                3</div>
+                            <div>
+                                <h4 class="font-bold text-coffee-dark text-sm">Mulai Monitoring &amp; Dapatkan Laporan
+                                </h4>
+                                <p class="text-xs text-coffee-light mt-1">Tekan tombol <em>Mulai Deteksi</em>. Laporan
+                                    persentase ceri matang akan diperbarui secara kontinu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tips Placement Camera Box Right -->
+                <div
+                    class="lg:col-span-6 bg-gradient-to-br from-[#3E2723] to-[#251614] rounded-3xl p-8 text-white shadow-xl border border-[#5D4037]">
+                    <div class="flex items-center gap-3 text-leaf-light font-bold text-base mb-4">
+                        <i class="fa-solid fa-lightbulb text-xl text-yellow-400"></i>
+                        <h3>Tips Penempatan Kamera Statis yang Ideal</h3>
+                    </div>
+                    <p class="text-xs text-coffee-cream/80 mb-6 leading-relaxed">
+                        Kualitas inferensi model AI sangat dipengaruhi oleh posisi kamera di lapangan kebun:
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-xs text-white shrink-0 mt-0.5">
+                                <i class="fa-solid fa-ruler-horizontal"></i>
+                            </div>
+                            <div class="text-xs">
+                                <strong class="text-white block text-sm">Jarak Kamera: 30 – 60 cm</strong>
+                                <span class="text-coffee-cream/70">Jarak optimal agar buah terdeteksi jelas tanpa
+                                    kehilangan resolusi tekstur permukaan kulit buah.</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-xs text-white shrink-0 mt-0.5">
+                                <i class="fa-solid fa-compass"></i>
+                            </div>
+                            <div class="text-xs">
+                                <strong class="text-white block text-sm">Sudut Kemiringan: 45° dari Atas</strong>
+                                <span class="text-coffee-cream/70">Hindari memotret langsung berhadapan dengan arah
+                                    sinar matahari terbit/terbenam (backlight).</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-xs text-white shrink-0 mt-0.5">
+                                <i class="fa-solid fa-sun"></i>
+                            </div>
+                            <div class="text-xs">
+                                <strong class="text-white block text-sm">Pencahayaan &amp; Kanopi</strong>
+                                <span class="text-coffee-cream/70">Gunakan tudung pelindung cuaca (hood) untuk
+                                    mengurangi silau bias sinar matahari langsung dan tetesan hujan.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 7. TINGKAT KEMATANGAN (4 KELAS DETAIL)     -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-coffee-cream border-t border-coffee-creamDark" id="kematangan">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs uppercase tracking-widest text-berry-red font-bold">Klasifikasi Visual</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark mt-2">
+                    4 Standar Kelas Kematangan Buah Kopi
+                </h2>
+                <div class="w-16 h-1 bg-leaf mx-auto mt-4 rounded-full"></div>
+                <p class="text-coffee-light mt-4 text-base">
+                    Model YOLOv8 dilatih untuk mengenali ciri spesifik pigmen warna dan bentuk buah pada tiap siklus
+                    pertumbuhan.
+                </p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Kelas 1: Mentah -->
+                <div
+                    class="bg-white rounded-2xl overflow-hidden shadow-sm border-t-4 border-leaf hover:shadow-md transition-shadow">
+                    <div
+                        class="h-36 bg-gradient-to-br from-green-700 to-green-900 flex items-center justify-center text-white relative p-4">
+                        <span
+                            class="absolute top-3 right-3 bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Kelas
+                            0</span>
+                        <div class="text-center">
+                            <i class="fa-solid fa-circle text-4xl text-green-400 drop-shadow"></i>
+                            <div class="text-xs font-semibold mt-2 text-green-100">Pigmen Klorofil Dominan</div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h4 class="font-serif font-bold text-xl text-coffee-dark">Mentah (Unripe)</h4>
+                        <p class="text-xs text-coffee-light mt-1 mb-4">Warna hijau padat, tekstur keras, kadar gula
+                            alami belum terbentuk.</p>
+                        <div
+                            class="p-3 bg-leaf-soft rounded-xl text-[11px] text-leaf-dark font-medium border border-leaf/20">
+                            <span class="font-bold block text-leaf-dark mb-0.5">Rekomendasi Tindakan:</span>
+                            Jangan dipetik. Biarkan di pohon minimal 2–3 minggu ke depan.
+                        </div>
+                    </div>
+                </div>
+                <!-- Kelas 2: Setengah Matang -->
+                <div
+                    class="bg-white rounded-2xl overflow-hidden shadow-sm border-t-4 border-berry-orange hover:shadow-md transition-shadow">
+                    <div
+                        class="h-36 bg-gradient-to-br from-amber-500 to-orange-700 flex items-center justify-center text-white relative p-4">
+                        <span
+                            class="absolute top-3 right-3 bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Kelas
+                            1</span>
+                        <div class="text-center">
+                            <i class="fa-solid fa-circle text-4xl text-amber-300 drop-shadow"></i>
+                            <div class="text-xs font-semibold mt-2 text-amber-100">Transisi Karotenoid</div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h4 class="font-serif font-bold text-xl text-coffee-dark">Setengah Matang (Semi)</h4>
+                        <p class="text-xs text-coffee-light mt-1 mb-4">Warna kuning semu oranye atau hijau kemerahan,
+                            getah masih terasa.</p>
+                        <div
+                            class="p-3 bg-orange-50 rounded-xl text-[11px] text-orange-900 font-medium border border-orange-200">
+                            <span class="font-bold block text-orange-900 mb-0.5">Rekomendasi Tindakan:</span>
+                            Tunggu 5–7 hari hingga antosianin merah terbentuk merata.
+                        </div>
+                    </div>
+                </div>
+                <!-- Kelas 3: Matang Penuh -->
+                <div
+                    class="bg-white rounded-2xl overflow-hidden shadow-sm border-t-4 border-berry-red hover:shadow-md transition-shadow ring-2 ring-berry-red/20">
+                    <div
+                        class="h-36 bg-gradient-to-br from-red-600 to-red-900 flex items-center justify-center text-white relative p-4">
+                        <span
+                            class="absolute top-3 right-3 bg-white text-berry-red text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase shadow">Target
+                            Panen</span>
+                        <div class="text-center">
+                            <i class="fa-solid fa-circle text-4xl text-red-300 drop-shadow"></i>
+                            <div class="text-xs font-semibold mt-2 text-red-100">Kadar Gula / Brix Maksimal</div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h4 class="font-serif font-bold text-xl text-coffee-dark">Matang (Ripe Cherry)</h4>
+                        <p class="text-xs text-coffee-light mt-1 mb-4">Warna merah ceri menyala cerah, kenyal saat
+                            ditekan, lendir manis berlimpah.</p>
+                        <div
+                            class="p-3 bg-red-50 rounded-xl text-[11px] text-red-900 font-medium border border-red-200">
+                            <span class="font-bold block text-red-900 mb-0.5">Rekomendasi Tindakan:</span>
+                            <strong>Petik sekarang!</strong> Waktu terbaik untuk proses fermentasi specialty.
+                        </div>
+                    </div>
+                </div>
+                <!-- Kelas 4: Lewat Matang -->
+                <div
+                    class="bg-white rounded-2xl overflow-hidden shadow-sm border-t-4 border-[#3E2723] hover:shadow-md transition-shadow">
+                    <div
+                        class="h-36 bg-gradient-to-br from-stone-700 to-stone-900 flex items-center justify-center text-white relative p-4">
+                        <span
+                            class="absolute top-3 right-3 bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Kelas
+                            3</span>
+                        <div class="text-center">
+                            <i class="fa-solid fa-circle text-4xl text-stone-400 drop-shadow"></i>
+                            <div class="text-xs font-semibold mt-2 text-stone-200">Fermentasi Berlebih</div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h4 class="font-serif font-bold text-xl text-coffee-dark">Lewat Matang (Overripe)</h4>
+                        <p class="text-xs text-coffee-light mt-1 mb-4">Warna merah kehitaman atau keriput kecokelatan,
+                            rentan pembusukan jamur.</p>
+                        <div
+                            class="p-3 bg-stone-100 rounded-xl text-[11px] text-stone-800 font-medium border border-stone-300">
+                            <span class="font-bold block text-stone-900 mb-0.5">Rekomendasi Tindakan:</span>
+                            Petik dan pisahkan segera agar tidak merusak aroma ceri lainnya.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 8. DEMO APLIKASI INTERAKTIF (IFRAME/FRAME)  -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-white" id="demo">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs uppercase tracking-widest text-leaf font-bold">Simulasi Nyata</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark mt-2">
+                    Demo Antarmuka Aplikasi INCO
+                </h2>
+                <div class="w-16 h-1 bg-berry-red mx-auto mt-4 rounded-full"></div>
+                <p class="text-coffee-light mt-4 text-base">
+                    Coba pengalaman antarmuka aplikasi pemantau langsung di dalam peramban Anda sebelum menginstalnya.
+                </p>
+            </div>
+            <div class="flex flex-col items-center">
+                <!-- Controls bar -->
+                <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+                    <button
+                        class="bg-coffee-dark hover:bg-[#2b1b18] text-white text-xs px-4 py-2 rounded-full font-semibold flex items-center gap-2 transition-all"
+                        id="fullscreenDemoBtn">
+                        <i class="fa-solid fa-expand"></i> Buka Layar Penuh (Fullscreen)
+                    </button>
+                    <button
+                        class="bg-coffee-creamDark hover:bg-[#ded1c3] text-coffee-dark text-xs px-4 py-2 rounded-full font-semibold flex items-center gap-2 transition-all"
+                        id="reloadDemoBtn">
+                        <i class="fa-solid fa-rotate-right"></i> Reset Demo
+                    </button>
+                </div>
+                <!-- Phone Frame Container -->
+                <div class="w-full max-w-md aspect-[9/17] sm:aspect-[9/16] bg-[#1a110e] rounded-[44px] p-3 shadow-2xl border-4 border-[#6D4C41] relative transition-all"
+                    id="demoFrameContainer">
+                    <div class="w-full h-full bg-[#FAF7F2] rounded-[34px] overflow-hidden flex flex-col relative">
+                        <!-- In-App Header Simulation -->
+                        <div class="bg-[#3E2723] text-white px-5 pt-7 pb-3 flex items-center justify-between shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-seedling text-berry-red text-base"></i>
+                                <span class="font-serif font-bold text-sm">INCO Monitoring</span>
+                            </div>
+                            <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-mono">Live YOLOv8</span>
+                        </div>
+                        <!-- In-App Body (Can switch to an actual iframe by setting src to APP_CONFIG.demoUrl) -->
+                        <div class="flex-1 p-4 overflow-y-auto space-y-4">
+                            <!-- Live Video Card -->
+                            <div
+                                class="bg-black rounded-2xl overflow-hidden relative aspect-video flex items-center justify-center border border-coffee-creamDark shadow">
+                                <img alt="Coffee Cherries Camera" class="w-full h-full object-cover opacity-80"
+                                    src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg" />
+                                <!-- Overlay Bounding Boxes -->
+                                <div class="absolute inset-0 p-3 pointer-events-none">
+                                    <div
+                                        class="absolute top-4 left-6 border-2 border-berry-red bg-berry-red/30 px-1 py-0.5 rounded text-[8px] text-white font-mono font-bold">
+                                        Ripe (96.4%)
+                                    </div>
+                                    <div
+                                        class="absolute bottom-6 right-8 border-2 border-berry-red bg-berry-red/30 px-1 py-0.5 rounded text-[8px] text-white font-mono font-bold">
+                                        Ripe (93.1%)
+                                    </div>
+                                    <div
+                                        class="absolute top-10 right-14 border-2 border-leaf-light bg-leaf/40 px-1 py-0.5 rounded text-[8px] text-white font-mono font-bold">
+                                        Unripe (89.5%)
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[9px] text-white/80 font-mono">
+                                    FPS: 24.2 | 1080p
+                                </div>
+                            </div>
+                            <!-- Metrics Widget in App -->
+                            <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-coffee-creamDark">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs font-bold text-coffee-dark">Distribusi Ceri di Pohon</span>
+                                    <span class="text-[10px] text-leaf font-semibold">Total: 74 Buah</span>
+                                </div>
+                                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden flex">
+                                    <div class="bg-berry-red h-full" style="width: 62%" title="Matang: 62%"></div>
+                                    <div class="bg-berry-orange h-full" style="width: 15%" title="Setengah Matang: 15%">
+                                    </div>
+                                    <div class="bg-leaf h-full" style="width: 18%" title="Mentah: 18%"></div>
+                                    <div class="bg-stone-600 h-full" style="width: 5%" title="Lewat Matang: 5%"></div>
+                                </div>
+                                <div
+                                    class="flex justify-between text-[10px] text-coffee-light mt-2 pt-1 border-t border-gray-100">
+                                    <span class="text-berry-red font-bold">● 62% Matang</span>
+                                    <span class="text-amber-600 font-bold">● 15% Semi</span>
+                                    <span class="text-leaf font-bold">● 18% Hijau</span>
+                                    <span class="text-stone-700 font-bold">● 5% Over</span>
+                                </div>
+                            </div>
+                            <!-- Recommendation Card in App -->
+                            <div class="bg-leaf-soft border border-leaf/30 p-3.5 rounded-2xl flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check text-leaf text-lg mt-0.5"></i>
+                                <div class="text-xs">
+                                    <span class="font-bold text-leaf-dark block">Kondisi Blok A: Rekomendasi
+                                        Panen</span>
+                                    <p class="text-coffee-mid mt-0.5 text-[11px] leading-tight">
+                                        Tingkat kematangan telah melampaui ambang batas 60%. Silakan instruksikan tim
+                                        petik selektif untuk blok ini.
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Log button trigger test -->
+                            <div class="pt-1">
+                                <button
+                                    class="w-full bg-coffee-dark text-white text-xs font-semibold py-2.5 rounded-xl shadow active:scale-95 transition-transform flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-camera-rotate"></i> Ambil Snapshot Baru
+                                </button>
+                            </div>
+                        </div>
+                        <!-- In-App Bottom Navigation -->
+                        <div
+                            class="bg-white border-t border-coffee-creamDark px-6 py-2 flex justify-between text-coffee-light text-xs">
+                            <button class="flex flex-col items-center text-berry-red font-bold">
+                                <i class="fa-solid fa-camera"></i>
+                                <span class="text-[9px]">Monitor</span>
+                            </button>
+                            <button class="flex flex-col items-center hover:text-coffee-dark">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <span class="text-[9px]">Statistik</span>
+                            </button>
+                            <button class="flex flex-col items-center hover:text-coffee-dark">
+                                <i class="fa-solid fa-gear"></i>
+                                <span class="text-[9px]">Kamera</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 9. SECTION UNDUH APLIKASI (PWA & APK)      -->
+    <!-- ========================================== -->
+    <section
+        class="py-24 bg-gradient-to-b from-[#3E2723] via-[#331F1C] to-[#251614] text-white relative overflow-hidden"
+        id="unduh">
+        <!-- Glow backgrounds -->
+        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-berry-red/30 rounded-full blur-3xl pointer-events-none">
+        </div>
+        <div class="absolute -top-24 -right-24 w-80 h-80 bg-leaf/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-berry-red/20 border border-berry-red/40 text-berry-red text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-download"></i> Instalasi &amp; Unduhan
+                </span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-extrabold text-white mt-3">
+                    Pasang Aplikasi INCO Sekarang
+                </h2>
+                <p class="text-coffee-cream/80 mt-4 text-base leading-relaxed">
+                    Gunakan sebagai aplikasi web progresif (PWA) instan tanpa perlu ke Play Store, atau unduh paket file
+                    APK mandiri.
+                </p>
+            </div>
+            <!-- App Card Center -->
+            <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 sm:p-12 shadow-2xl">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 border-b border-white/15">
+                    <!-- App Info Left -->
+                    <div class="flex items-center gap-5 text-center md:text-left">
+                        <div
+                            class="w-20 h-20 rounded-2xl bg-gradient-to-br from-berry-red to-[#800000] flex items-center justify-center text-white text-3xl shadow-xl border border-white/30 shrink-0">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-serif text-2xl sm:text-3xl font-bold text-white">INCO Mobile App</h3>
+                            <p class="text-xs text-coffee-cream/70 mt-1">Sistem Deteksi Kematangan Kopi YOLOv8</p>
+                            <div class="flex flex-wrap items-center gap-3 mt-2 text-xs text-coffee-cream/80">
+                                <span class="bg-white/15 px-2.5 py-0.5 rounded-full" id="txtAppVersion">Versi:
+                                    v1.2.0-beta</span>
+                                <span class="bg-white/15 px-2.5 py-0.5 rounded-full" id="txtAppSize">Ukuran: 28.4
+                                    MB</span>
+                                <span class="text-leaf-light font-medium"><i class="fa-solid fa-shield-halved"></i>
+                                    Bebas Iklan</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- PWA Main Button -->
+                    <div class="w-full md:w-auto flex flex-col items-center">
+                        <button
+                            class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-berry-red to-[#b71c1c] hover:from-[#a51d1d] hover:to-[#8e1515] text-white font-bold text-base shadow-xl shadow-berry-red/50 hover:shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3"
+                            id="pwaInstallBtn">
+                            <i class="fa-solid fa-download text-lg"></i>
+                            <span id="pwaBtnText">Instal ke Layar Utama</span>
+                        </button>
+                        <span class="text-[11px] text-coffee-cream/60 mt-2 text-center" id="pwaSubText">Kompatibel
+                            dengan Android, Chrome, Edge, &amp; Desktop</span>
+                    </div>
+                </div>
+                <!-- Secondary Action: APK & iOS Instructions -->
+                <div class="pt-8 grid md:grid-cols-2 gap-8">
+                    <!-- Option APK -->
+                    <div class="bg-white/5 rounded-2xl p-6 border border-white/10 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2.5 text-white font-bold text-base mb-2">
+                                <i class="fa-brands fa-android text-leaf-light text-xl"></i>
+                                <h4>Unduh Paket APK Android</h4>
+                            </div>
+                            <p class="text-xs text-coffee-cream/70 leading-relaxed mb-4">
+                                Pasang file APK instalasi mandiri untuk perangkat Android di lapangan tanpa
+                                ketergantungan koneksi Google Play Store.
+                            </p>
+                        </div>
+                        <a class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs border border-white/20 transition-all"
+                            href="#" id="apkDownloadLink">
+                            <i class="fa-solid fa-file-arrow-down"></i> Unduh File APK (.apk)
+                        </a>
+                    </div>
+                    <!-- Option iOS Safari Notice -->
+                    <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                        <div class="flex items-center gap-2.5 text-white font-bold text-base mb-2">
+                            <i class="fa-brands fa-apple text-xl"></i>
+                            <h4>Pengguna iPhone / iPad (iOS Safari)</h4>
+                        </div>
+                        <p class="text-xs text-coffee-cream/70 leading-relaxed mb-3">
+                            Buka landing page ini di peramban <strong>Safari</strong>, lalu ikuti langkah mudah berikut:
+                        </p>
+                        <div class="space-y-1.5 text-xs text-coffee-cream/90 font-medium">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">1</span>
+                                <span>Tekan tombol <strong>Bagikan (Share)</strong> <i
+                                        class="fa-solid fa-arrow-up-from-bracket text-[10px]"></i> di Safari</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">2</span>
+                                <span>Pilih menu <strong>"Tambahkan ke Layar Utama" (Add to Home Screen)</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 10. FAQ ACCORDION                          -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-coffee-cream" id="faq">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs uppercase tracking-widest text-berry-red font-bold">Pertanyaan Populer</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-coffee-dark mt-2">
+                    Frequently Asked Questions
+                </h2>
+                <div class="w-16 h-1 bg-leaf mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="space-y-4" id="faqAccordion">
+                <!-- FAQ 1 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-coffee-creamDark overflow-hidden">
+                    <button
+                        class="w-full px-6 py-5 text-left flex items-center justify-between font-bold text-coffee-dark text-base hover:text-berry-red transition-colors faq-btn">
+                        <span>Apakah aplikasi ini membutuhkan koneksi internet konstan di kebun?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="px-6 pb-5 text-sm text-coffee-light leading-relaxed hidden faq-answer">
+                        Tidak harus. Model inferensi YOLOv8 dapat dijalankan di edge node lokal (misalnya Raspberry Pi
+                        atau laptop pos kebun via WiFi lokal / hotspot mini). Saat ada sinyal, data agregat baru
+                        disinkronkan ke server pusat.
+                    </div>
+                </div>
+                <!-- FAQ 2 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-coffee-creamDark overflow-hidden">
+                    <button
+                        class="w-full px-6 py-5 text-left flex items-center justify-between font-bold text-coffee-dark text-base hover:text-berry-red transition-colors faq-btn">
+                        <span>Jenis perangkat kamera apa saja yang didukung?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="px-6 pb-5 text-sm text-coffee-light leading-relaxed hidden faq-answer">
+                        Sistem mendukung kamera dengan output protokol standar IP RTSP, HTTP snapshot, webcam USB,
+                        maupun modul IoT berdaya rendah seperti ESP32-CAM dengan resolusi minimum 720p (disarankan
+                        1080p).
+                    </div>
+                </div>
+                <!-- FAQ 3 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-coffee-creamDark overflow-hidden">
+                    <button
+                        class="w-full px-6 py-5 text-left flex items-center justify-between font-bold text-coffee-dark text-base hover:text-berry-red transition-colors faq-btn">
+                        <span>Seberapa tinggi akurasi deteksi model YOLOv8 pada kondisi cahaya mendung atau
+                            silau?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="px-6 pb-5 text-sm text-coffee-light leading-relaxed hidden faq-answer">
+                        Dataset pelatihan model telah diaugmentasi dengan berbagai variasi intensitas cahaya matahari,
+                        bayangan dedaunan, dan kondisi basah setelah hujan. Akurasi mAP mencapai kisaran [XX%] pada
+                        dataset pengujian lapang kami.
+                    </div>
+                </div>
+                <!-- FAQ 4 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-coffee-creamDark overflow-hidden">
+                    <button
+                        class="w-full px-6 py-5 text-left flex items-center justify-between font-bold text-coffee-dark text-base hover:text-berry-red transition-colors faq-btn">
+                        <span>Bagaimana cara menguji aplikasi jika saya belum memasang kamera di kebun?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="px-6 pb-5 text-sm text-coffee-light leading-relaxed hidden faq-answer">
+                        Di dalam aplikasi tersedia opsi <em>"Mode Simulasi / Upload Gambar"</em>. Anda dapat mengunggah
+                        foto dahan kopi dari galeri HP Anda untuk mencoba deteksi YOLOv8 secara langsung.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 11. TENTANG PENGEMBANG & KONTAK            -->
+    <!-- ========================================== -->
+    <section class="py-20 bg-white border-t border-coffee-creamDark">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+                class="bg-gradient-to-r from-coffee-cream to-white rounded-3xl p-8 sm:p-12 border border-coffee-creamDark shadow-sm">
+                <div class="grid md:grid-cols-12 gap-8 items-center">
+                    <div class="md:col-span-8 space-y-4">
+                        <span class="text-xs uppercase tracking-widest text-leaf font-bold">Kolaborasi &amp;
+                            Penelitian</span>
+                        <h2 class="font-serif text-3xl font-bold text-coffee-dark">Tentang Tim Pengembang INCO</h2>
+                        <p class="text-sm text-coffee-light leading-relaxed">
+                            Inisiatif ini dikembangkan oleh <strong>Tim Riset Smart Farming INCO</strong>, menggabungkan
+                            kepakaran ilmu pertanian presisi dan teknik kecerdasan buatan untuk memberdayakan kelompok
+                            tani kopi nusantara.
+                        </p>
+                        <div class="flex flex-wrap gap-4 text-xs font-semibold text-coffee-mid pt-2">
+                            <span class="flex items-center gap-1.5"><i
+                                    class="fa-solid fa-building-columns text-berry-red"></i> <span
+                                    id="txtDevInstitution">Laboratorium Smart Agro</span></span>
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-envelope text-leaf"></i> <span
+                                    id="txtDevEmail">kontak@inco-coffee.id</span></span>
+                        </div>
+                    </div>
+                    <div class="md:col-span-4 flex flex-col sm:flex-row md:flex-col gap-3">
+                        <a class="px-6 py-3 rounded-xl bg-coffee-dark hover:bg-[#2e1d1a] text-white text-center text-xs font-bold transition-all flex items-center justify-center gap-2"
+                            href="mailto:kontak@inco-coffee.id" id="btnContactEmail">
+                            <i class="fa-solid fa-paper-plane"></i> Hubungi Tim Pengembang
+                        </a>
+                        <a class="px-6 py-3 rounded-xl bg-white hover:bg-gray-50 border border-coffee-creamDark text-coffee-dark text-center text-xs font-bold transition-all flex items-center justify-center gap-2"
+                            href="https://github.com" id="btnContactRepo" target="_blank">
+                            <i class="fa-brands fa-github text-sm"></i> Repositori &amp; Riset
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ========================================== -->
+    <!-- 12. FOOTER                                 -->
+    <!-- ========================================== -->
+    <footer class="bg-[#241714] text-white pt-16 pb-12 border-t border-[#3E2723]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+                <!-- Brand & Description -->
+                <div class="space-y-4 md:col-span-2">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-berry-red flex items-center justify-center text-white font-bold">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <span class="font-serif text-2xl font-bold tracking-tight text-white">INCO</span>
+                    </div>
+                    <p class="text-xs text-coffee-cream/70 max-w-md leading-relaxed">
+                        Sistem Cerdas Deteksi Tingkat Kematangan Buah Kopi Otomatis Berbasis YOLOv8 &amp; Kamera Statis.
+                        Mendukung kemajuan perkebunan kopi presisi Indonesia.
+                    </p>
+                    <div class="text-[11px] text-coffee-cream/50">
+                        Terima kasih kepada para petani mitra dan pegiat kopi nusantara.
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-bold text-sm text-white mb-4">Navigasi Cepat</h4>
+                    <ul class="space-y-2 text-xs text-coffee-cream/75">
+                        <li><a class="hover:text-white transition-colors" href="#beranda">Beranda</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#tujuan">Tujuan &amp; Solusi</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#fitur">Fitur Utama</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#cara-kerja">Cara Kerja Sistem</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#kematangan">Tingkat Kematangan</a></li>
+                    </ul>
+                </div>
+                <!-- Legal & Download -->
+                <div>
+                    <h4 class="font-bold text-sm text-white mb-4">Aplikasi &amp; Lisensi</h4>
+                    <ul class="space-y-2 text-xs text-coffee-cream/75">
+                        <li><a class="hover:text-white transition-colors" href="#unduh">Instal PWA</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#unduh">Unduh APK Android</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#demo">Coba Demo Interaktif</a></li>
+                        <li><a class="hover:text-white transition-colors" href="#faq">Bantuan &amp; FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-coffee-cream/50 gap-4">
+                <div>
+                    © <span id="currentYear">2025</span> INCO Coffee Ripeness AI. Hak cipta dilindungi.
+                </div>
+                <div class="flex items-center gap-4">
+                    <a class="hover:text-white transition-colors" href="#">Kebijakan Privasi</a>
+                    <span>•</span>
+                    <a class="hover:text-white transition-colors" href="#">Ketentuan Layanan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT: LOGIKA PWA, DEMO, DAN FAQ     -->
+    <!-- ========================================== -->
+    <script>
+        // 1. Inisialisasi Data dari APP_CONFIG
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.getElementById('txtAppVersion').textContent = `Versi: ${APP_CONFIG.version}`;
+        document.getElementById('txtAppSize').textContent = `Ukuran: ${APP_CONFIG.apkSize}`;
+        document.getElementById('apkDownloadLink').setAttribute('href', APP_CONFIG.apkDownloadUrl);
+        document.getElementById('txtDevInstitution').textContent = APP_CONFIG.developer.institution;
+        document.getElementById('txtDevEmail').textContent = APP_CONFIG.developer.email;
+        document.getElementById('btnContactEmail').setAttribute('href', `mailto:${APP_CONFIG.developer.email}`);
+        document.getElementById('btnContactRepo').setAttribute('href', APP_CONFIG.developer.github);
+
+        // 2. Mobile Nav Toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 3. FAQ Accordion Behavior
+        const faqButtons = document.querySelectorAll('.faq-btn');
+        faqButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const answer = btn.nextElementSibling;
+                const icon = btn.querySelector('.fa-chevron-down');
+                const isOpen = !answer.classList.contains('hidden');
+
+                // Tutup semua yang lain
+                document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.add('hidden'));
+                document.querySelectorAll('.faq-btn .fa-chevron-down').forEach(ic => ic.classList.remove('rotate-180'));
+
+                if (!isOpen) {
+                    answer.classList.remove('hidden');
+                    icon.classList.add('rotate-180');
+                }
+            });
+        });
+
+        // 4. Logika PWA (Progressive Web App) Install Banner & Event
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwaInstallBtn');
+        const pwaBtnText = document.getElementById('pwaBtnText');
+        const pwaSubText = document.getElementById('pwaSubText');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Mencegah prompt otomatis browser
+            e.preventDefault();
+            deferredPrompt = e;
+            pwaBtnText.textContent = "Instal Sekarang (1-Klik)";
+            pwaSubText.textContent = "Aplikasi siap dipasang ke perangkat Anda";
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    pwaBtnText.textContent = "Aplikasi Telah Dipasang!";
+                    pwaSubText.textContent = "Ikon kini tersedia di layar utama Anda";
+                    installBtn.classList.replace('from-berry-red', 'from-leaf');
+                }
+                deferredPrompt = null;
+            } else {
+                // Fallback jika dibuka di desktop atau sudah terpasang
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                    alert("Aplikasi INCO sudah terpasang di perangkat Anda!");
+                } else {
+                    alert("Untuk menginstal: Tekan ikon instalasi (tanda panah/komputer) di bilah alamat peramban Anda, atau gunakan menu Bagikan > Tambahkan ke Layar Utama di ponsel.");
+                }
+            }
+        });
+
+        // Deteksi jika aplikasi dibuka dalam mode Standalone PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            pwaBtnText.textContent = "Buka Aplikasi Terpasang";
+            pwaSubText.textContent = "Aplikasi sedang aktif di perangkat Anda";
+            installBtn.addEventListener('click', () => {
+                window.location.href = APP_CONFIG.demoUrl;
+            });
+        }
+
+        // 5. Fullscreen Demo Toggle
+        const fullscreenDemoBtn = document.getElementById('fullscreenDemoBtn');
+        const demoFrameContainer = document.getElementById('demoFrameContainer');
+        fullscreenDemoBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                demoFrameContainer.requestFullscreen().catch(err => {
+                    alert(`Gagal layar penuh: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // 6. Reset Demo button
+        document.getElementById('reloadDemoBtn').addEventListener('click', () => {
+            alert("Simulasi kamera dan inferensi YOLOv8 disegarkan ulang!");
+        });
+    </script>
+</body>
+
+</html>
