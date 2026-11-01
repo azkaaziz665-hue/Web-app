@@ -29894,7 +29894,7 @@ _.Q=c
 _.as=0
 _.at="http://192.168.1.100:81/stream"
 _.ax="http://192.168.1.101:80/api/servo"
-_.ay="http://80.43.0.86:8000"
+_.ay="https://80.43.0.86.nip.io"
 _.ch="cam-1"
 _.CW="servo-1"
 _.cx=""
@@ -107775,7 +107775,7 @@ return A.r(A.nk(),$async$Cp)
 case 2:m=b.a
 l=J.al(m)
 k=A.bv(l.i(m,"relay_server_url"))
-q.ay=k!=null&&k.length!==0?k:"http://80.43.0.86:8000"
+q.ay=k!=null&&k.length!==0&&k!=="http://80.43.0.86:8000"?k:"https://80.43.0.86.nip.io"
 p=A.bv(l.i(m,"cam_device_id"))
 q.ch=p==null?"cam-1":p
 p=A.bv(l.i(m,"servo_device_id"))
@@ -108410,7 +108410,7 @@ $0(){return this.a.Q=$.q0().a},
 $S:0}
 A.aMd.prototype={
 $0(){var s,r,q=this.a,p=this.b
-p=p!=null&&p.length!==0?p:"http://80.43.0.86:8000"
+p=p!=null&&p.length!==0&&p!=="http://80.43.0.86:8000"?p:"https://80.43.0.86.nip.io"
 q.e.sd3(0,p)
 p=this.c.a
 s=J.al(p)
