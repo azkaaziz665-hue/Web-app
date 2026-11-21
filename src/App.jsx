@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import appScreenshot from "./assets/app-screenshot.png";
 import { APP_CONFIG } from "./config";
 import {
   FaBars, FaTimes, FaDownload, FaPlay, FaWifi,
@@ -288,108 +287,21 @@ function Hero() {
 
 function HeroPhoneShowcase() {
   return (
-    <div className="relative mx-auto w-full max-w-[340px] sm:max-w-[370px]">
-      {/* Floating Telemetry Badge - Top Left */}
-      <div className="hidden sm:flex items-center gap-2.5 absolute -left-10 top-14 z-30 glass-dark px-3.5 py-2.5 rounded-2xl shadow-xl animate-float">
-        <div className="w-8 h-8 rounded-xl bg-[#10B981]/20 text-[#10B981] flex items-center justify-center text-sm">
-          <FaWifi />
-        </div>
-        <div>
-          <div className="text-[10px] uppercase tracking-wider text-[#83A590] font-bold">ESP32-CAM Stream</div>
-          <div className="text-xs font-bold text-white flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#10B981]" /> HTTPS Relay Aktif
-          </div>
-        </div>
+    <div className="relative w-full max-w-[330px] xs:max-w-[355px] sm:max-w-[380px] h-[640px] xs:h-[680px] sm:h-[720px] rounded-[44px] sm:rounded-[50px] bg-gradient-to-b from-[#1B3B2B] to-[#032517] p-3 sm:p-3.5 shadow-2xl border-[3px] border-[#83A590]/40 ring-1 ring-black/40 transition-transform hover:scale-[1.01] duration-300 mx-auto">
+      {/* Top Dynamic Island / Notch */}
+      <div className="absolute top-5 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-4 sm:h-5 bg-black rounded-full z-30 pointer-events-none" />
+
+      {/* Full-Height Frame Flutter Web Interaktif */}
+      <div className="w-full h-full rounded-[34px] sm:rounded-[38px] overflow-hidden bg-[#FCF9F3] relative shadow-inner">
+        <iframe
+          src={getAssetUrl("app-web/index.html")}
+          title="Ranum Live App"
+          className="w-full h-full border-0"
+        />
       </div>
 
-      {/* Floating Telemetry Badge - Bottom Right */}
-      <div className="hidden sm:flex items-center gap-2.5 absolute -right-8 bottom-24 z-30 glass-dark px-3.5 py-2.5 rounded-2xl shadow-xl animate-float">
-        <div className="w-8 h-8 rounded-xl bg-[#C0392B]/25 text-[#FFD1B5] flex items-center justify-center text-sm">
-          <FaSlidersH />
-        </div>
-        <div>
-          <div className="text-[10px] uppercase tracking-wider text-[#83A590] font-bold">Servo Pan-Tilt</div>
-          <div className="text-xs font-bold text-white">Smooth 1° / 15ms</div>
-        </div>
-      </div>
-
-      {/* Phone Bezel */}
-      <div className="relative rounded-[42px] bg-gradient-to-b from-[#1B3B2B] to-[#032517] p-3 shadow-2xl border-2 border-[#83A590]/40 ring-1 ring-black/40">
-        {/* Top Dynamic Island */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-20" />
-
-        {/* Screen Content */}
-        <div className="rounded-[32px] overflow-hidden bg-[#FCF9F3] text-[#1C1C18] relative">
-          {/* App Header Preview */}
-          <div className="bg-[#032517] text-white px-4 pt-8 pb-3.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#1B3B2B] p-1 border border-[#83A590]/30">
-                <img src={getAssetUrl("ranum-kopi.svg")} alt="Ranum" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <div className="font-serif font-bold text-sm leading-none">Ranum</div>
-                <div className="text-[9px] text-[#4CD6FB] font-semibold">ESP32 STREAM ACTIVE</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 bg-[#1B3B2B] px-2.5 py-1 rounded-full text-[10px] font-bold text-[#10B981] border border-[#10B981]/30">
-              <FaBatteryFull /> 96% • 8.2V
-            </div>
-          </div>
-
-          {/* Screenshot / Vision Preview */}
-          <div className="p-3 space-y-3">
-            <div className="relative rounded-2xl overflow-hidden bg-[#032517] aspect-[16/11] shadow-md border border-[#E5E2DC]">
-              <img
-                src={appScreenshot}
-                alt="Ranum AI Detection Preview"
-                className="w-full h-full object-cover opacity-90"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/40" />
-
-              {/* Simulated Live HUD Pill */}
-              <div className="absolute top-2.5 left-2.5 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] font-bold text-white flex items-center gap-1.5 border border-white/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-                STREAM ESP32 (cam-1)
-              </div>
-              <div className="absolute top-2.5 right-2.5 bg-amber-500/90 text-black px-2 py-0.5 rounded-full text-[9px] font-extrabold flex items-center gap-1">
-                <FaLightbulb /> PWM 180
-              </div>
-
-              {/* Bottom Telemetry Overlay */}
-              <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-[10px] text-white font-semibold">
-                <span className="bg-black/60 px-2 py-0.5 rounded-md">YOLOv8 • best.tflite</span>
-                <span className="bg-[#10B981]/90 text-[#032517] font-bold px-2 py-0.5 rounded-md">
-                  Siap Panen: 78%
-                </span>
-              </div>
-            </div>
-
-            {/* Mini Ripeness Distribution Cards */}
-            <div className="grid grid-cols-4 gap-1.5 text-center">
-              {[
-                { label: "Mentah", val: "3", bg: "bg-[#27AE60]/12 text-[#1E824C] border-[#27AE60]/30" },
-                { label: "Semi", val: "5", bg: "bg-[#E67E22]/12 text-[#D35400] border-[#E67E22]/30" },
-                { label: "Matang", val: "28", bg: "bg-[#C0392B]/15 text-[#C0392B] border-[#C0392B]/40" },
-                { label: "Lewat", val: "1", bg: "bg-[#880E4F]/12 text-[#880E4F] border-[#880E4F]/30" },
-              ].map((c) => (
-                <div key={c.label} className={`p-2 rounded-xl border ${c.bg}`}>
-                  <div className="text-sm font-extrabold font-serif">{c.val}</div>
-                  <div className="text-[9px] font-bold">{c.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Interactive Trigger to Live Demo Section */}
-            <a
-              href="#demo"
-              className="w-full py-3 rounded-xl bg-[#032517] hover:bg-[#1B3B2B] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
-            >
-              <FaPlay className="text-[10px] text-[#4CD6FB]" />
-              <span>Jalankan Aplikasi Interaktif di Bawah</span>
-            </a>
-          </div>
-        </div>
-      </div>
+      {/* Home Indicator */}
+      <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 w-28 sm:w-32 h-1 bg-white/40 rounded-full pointer-events-none z-30" />
     </div>
   );
 }
