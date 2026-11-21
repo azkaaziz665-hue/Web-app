@@ -96,7 +96,7 @@ function Navbar() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#FCF9F3] leading-none">
+                <span className="font-sans text-xl sm:text-2xl font-bold tracking-tight text-[#FCF9F3] leading-none">
                   Ranum
                 </span>
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/30">
@@ -222,7 +222,7 @@ function Hero() {
               <span className="text-[#4CD6FB]">ESP32-CAM & Pan-Tilt Servo</span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-[56px] font-extrabold leading-[1.15] text-[#FCF9F3] tracking-tight">
+            <h1 className="font-sans text-3xl sm:text-5xl lg:text-[56px] font-extrabold leading-[1.15] text-[#FCF9F3] tracking-tight">
               Panen Kopi di Waktu Terbaik,{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4CD6FB] via-[#C7EBD4] to-[#10B981] block sm:inline">
                 Dipandu Visi AI Presisi
@@ -265,7 +265,7 @@ function Hero() {
                   key={stat.label}
                   className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3.5 text-left hover:bg-white/10 transition-colors"
                 >
-                  <div className={`text-lg sm:text-xl font-extrabold font-serif ${stat.color}`}>
+                  <div className={`text-lg sm:text-xl font-extrabold font-sans ${stat.color}`}>
                     {stat.val}
                   </div>
                   <div className="text-xs font-semibold text-[#FCF9F3] mt-0.5">{stat.label}</div>
@@ -324,7 +324,7 @@ function Tujuan() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#C0392B]/10 text-[#C0392B] text-xs uppercase tracking-widest font-bold">
             Tujuan & Urgensi
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
             Mengapa Deteksi Otomatis Penting bagi Perkebunan Kopi?
           </h2>
           <div className="w-16 h-1 bg-[#10B981] mx-auto mt-4 rounded-full" />
@@ -413,7 +413,7 @@ function Tujuan() {
               <div className={`w-12 h-12 rounded-2xl ${b.bg} ${b.color} flex items-center justify-center text-xl mb-4 shadow-sm`}>
                 {b.icon}
               </div>
-              <h4 className="font-serif font-bold text-lg text-[#032517] mb-1.5">{b.title}</h4>
+              <h4 className="font-sans font-bold text-lg text-[#032517] mb-1.5">{b.title}</h4>
               <p className="text-xs sm:text-sm text-[#424843] leading-relaxed">{b.desc}</p>
             </AnimatedSection>
           ))}
@@ -479,7 +479,7 @@ function Fitur() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#10B981]/15 text-[#032517] text-xs uppercase tracking-widest font-bold">
             Ekosistem IoT & AI Terpadu
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
             Fitur Unggulan Ranum Smart Coffee Monitor
           </h2>
           <div className="w-16 h-1 bg-[#C0392B] mx-auto mt-4 rounded-full" />
@@ -509,7 +509,7 @@ function Fitur() {
                     {f.badge}
                   </span>
                 </div>
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-[#032517] mb-2.5">{f.title}</h3>
+                <h3 className="font-sans font-bold text-lg sm:text-xl text-[#032517] mb-2.5">{f.title}</h3>
                 <p className="text-xs sm:text-sm text-[#424843] leading-relaxed">{f.desc}</p>
               </div>
             </AnimatedSection>
@@ -548,7 +548,7 @@ function CaraKerja() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#032517]/10 text-[#032517] text-xs uppercase tracking-widest font-bold">
             Alur Operasional
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
             Bagaimana Sistem Ranum Bekerja?
           </h2>
           <div className="w-16 h-1 bg-[#10B981] mx-auto mt-4 rounded-full" />
@@ -591,11 +591,11 @@ function CaraKerja() {
                 <div className={`w-11 h-11 rounded-2xl ${s.iconBg} flex items-center justify-center text-lg shadow-sm`}>
                   {s.icon}
                 </div>
-                <span className="font-serif text-2xl font-extrabold text-[#032517]/15">
+                <span className="font-sans text-2xl font-extrabold text-[#032517]/15">
                   STEP {s.num}
                 </span>
               </div>
-              <h3 className="font-serif font-bold text-base sm:text-lg text-[#032517] mb-2">{s.title}</h3>
+              <h3 className="font-sans font-bold text-base sm:text-lg text-[#032517] mb-2">{s.title}</h3>
               <p className="text-xs sm:text-sm text-[#424843] leading-relaxed">{s.desc}</p>
             </motion.div>
           ))}
@@ -664,7 +664,7 @@ function Kematangan() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#C0392B]/10 text-[#C0392B] text-xs uppercase tracking-widest font-bold">
             Standar Klasifikasi AI
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
             4 Kelas Kematangan Buah Kopi pada Model YOLOv8
           </h2>
           <div className="w-16 h-1 bg-[#10B981] mx-auto mt-4 rounded-full" />
@@ -707,7 +707,7 @@ function Kematangan() {
                 </div>
 
                 <div className="p-5">
-                  <h4 className="font-serif font-bold text-lg text-[#032517]">{c.title}</h4>
+                  <h4 className="font-sans font-bold text-lg text-[#032517]">{c.title}</h4>
                   <p className="text-xs text-[#424843] mt-1.5 leading-relaxed">{c.desc}</p>
                 </div>
               </div>
@@ -740,13 +740,13 @@ function Demo() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#10B981]/15 text-[#032517] text-xs uppercase tracking-widest font-bold">
             Interactive Live Simulator
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
             Uji Coba Langsung Aplikasi Ranum (Flutter Web)
           </h2>
           <div className="w-16 h-1 bg-[#C0392B] mx-auto mt-4 rounded-full" />
           <p className="text-[#424843] mt-3 text-xs sm:text-base max-w-2xl mx-auto">
             Simulator di bawah ini menjalankan aplikasi <strong>Ranum versi terbaru</strong> yang sudah
-            terhubung langsung ke Relay Server HTTPS (<code>https://80.43.0.86.nip.io</code>) dan khusus
+            terhubung langsung ke Relay Server HTTPS (<span className="font-semibold text-[#032517]">https://80.43.0.86.nip.io</span>) dan khusus
             menggunakan stream <strong>ESP32-CAM</strong>.
           </p>
         </AnimatedSection>
@@ -760,7 +760,7 @@ function Demo() {
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#10B981]">
                     Status Koneksi Cloud
                   </span>
-                  <h3 className="font-serif font-bold text-lg text-[#032517]">
+                  <h3 className="font-sans font-bold text-lg text-[#032517]">
                     Panduan Uji Coba Cepat
                   </h3>
                 </div>
@@ -873,7 +873,7 @@ function Unduh() {
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#1B3B2B] border border-[#83A590]/40 text-[#4CD6FB] text-xs font-bold uppercase tracking-wider">
             <FaDownload /> Pusat Unduhan Resmi
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#FCF9F3] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#FCF9F3] mt-3">
             Pasang Aplikasi Ranum di Perangkat Anda
           </h2>
           <p className="text-[#FCF9F3]/80 mt-3 sm:mt-4 text-xs sm:text-base leading-relaxed">
@@ -890,7 +890,7 @@ function Unduh() {
               </div>
               <div>
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                  <h3 className="font-sans text-xl sm:text-2xl lg:text-3xl font-bold text-white">
                     Ranum Mobile App
                   </h3>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/30">
@@ -927,7 +927,7 @@ function Unduh() {
                   <h4>Paket APK Android Mandiri</h4>
                 </div>
                 <p className="text-xs text-[#FCF9F3]/75 leading-relaxed mb-4">
-                  Termasuk model AI <code>best.tflite</code> di dalam aplikasi sehingga deteksi kematangan
+                  Termasuk model AI <span className="font-semibold text-white">best.tflite</span> di dalam aplikasi sehingga deteksi kematangan
                   berjalan cepat di ponsel Android tanpa membebani kuota server.
                 </p>
               </div>
@@ -998,7 +998,7 @@ function FAQ() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#C0392B]/10 text-[#C0392B] text-xs uppercase tracking-widest font-bold">
             Pusat Bantuan
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
+          <h2 className="font-sans text-2xl sm:text-4xl font-bold text-[#032517] mt-3">
             Pertanyaan yang Sering Diajukan (FAQ)
           </h2>
           <div className="w-16 h-1 bg-[#10B981] mx-auto mt-4 rounded-full" />
@@ -1058,7 +1058,7 @@ function Kontak() {
               <span className="inline-block px-3 py-1 rounded-full bg-[#10B981]/15 text-[#032517] text-xs uppercase tracking-widest font-bold">
                 Kolaborasi & Penelitian
               </span>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#032517]">
+              <h2 className="font-sans text-2xl sm:text-3xl font-bold text-[#032517]">
                 Tentang Tim Pengembang Ranum
               </h2>
               <p className="text-xs sm:text-sm text-[#424843] leading-relaxed">
@@ -1111,7 +1111,7 @@ function Footer() {
               <div className="w-9 h-9 rounded-xl bg-[#1B3B2B] border border-[#83A590]/40 flex items-center justify-center overflow-hidden p-1.5">
                 <img src={getAssetUrl("ranum-kopi.svg")} alt="Ranum Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-white">
+              <span className="font-sans text-xl sm:text-2xl font-bold tracking-tight text-white">
                 Ranum
               </span>
             </div>
