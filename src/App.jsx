@@ -460,8 +460,8 @@ function Fitur() {
       badge: "Zero-Code Setup",
       icon: <FaWifi />,
       bg: "bg-[#1B3B2B]",
-      title: "Hotspot Captive Portal WiFi",
-      desc: "Kedua ESP32 memancarkan hotspot (Ranum-CAM-Setup & Ranum-Servo-Setup) di 192.168.4.1 agar petani bebas mengganti SSID & password WiFi kapan saja lewat HP.",
+      title: "Pengaturan WiFi via IP ESP32 & Hotspot",
+      desc: "Ganti SSID & password WiFi kapan saja melalui alamat IP lokal ESP32 (http://ranum-cam.local / http://ranum-servo.local) maupun melalui Captive Portal Hotspot 192.168.4.1.",
     },
     {
       badge: "Laporan Agronomi",
@@ -534,10 +534,10 @@ function CaraKerja() {
       { num: "04", icon: <FaPollH />, iconBg: "bg-[#C7EBD4] text-[#032517]", title: "Keputusan Panen & Excel", desc: "Data kematangan tersimpan ke riwayat batch lengkap dengan rekomendasi kesiapan panen dan ekspor laporan Excel (.xlsx)." },
     ],
     wifi: [
-      { num: "01", icon: <FaSatelliteDish />, iconBg: "bg-[#FFD1B5] text-[#795741]", title: "Hotspot Otomatis / Tombol BOOT", desc: "Saat WiFi belum diatur atau jaringan lag >12 detik (atau tombol BOOT ditekan 3 detik), ESP32 memancarkan WiFi Setup." },
-      { num: "02", icon: <FaMobileAlt />, iconBg: "bg-[#B3EBFF] text-[#003A47]", title: "Sambungkan HP ke Hotspot ESP", desc: "Hubungkan ponsel Anda ke WiFi 'Ranum-CAM-Setup' atau 'Ranum-Servo-Setup' tanpa memerlukan password." },
-      { num: "03", icon: <FaSlidersH />, iconBg: "bg-[#C7EBD4] text-[#032517]", title: "Buka Portal http://192.168.4.1", desc: "Halaman Captive Portal akan terbuka otomatis. Pilih jaringan WiFi sekitar dari daftar scan dan masukkan password-nya." },
-      { num: "04", icon: <FaCheckCircle />, iconBg: "bg-[#C7EBD4] text-[#10B981]", title: "Tersimpan Permanen di Flash NVS", desc: "Klik Simpan & Sambungkan. ESP32 menyimpan WiFi baru di memori permanen NVS dan langsung me-restart ke jaringan baru." },
+      { num: "01", icon: <FaSatelliteDish />, iconBg: "bg-[#FFD1B5] text-[#795741]", title: "Akses via IP ESP32 atau Hotspot", desc: "Buka alamat IP lokal ESP32 saat terhubung WiFi, atau sambungkan ke Hotspot 'Ranum-CAM-Setup' / 'Ranum-Servo-Setup' jika jaringan terputus." },
+      { num: "02", icon: <FaMobileAlt />, iconBg: "bg-[#B3EBFF] text-[#003A47]", title: "Buka Web Pengaturan di Browser", desc: "Akses http://[IP_ESP32] (misal http://ranum-cam.local) saat online, atau http://192.168.4.1 saat mode Hotspot." },
+      { num: "03", icon: <FaSlidersH />, iconBg: "bg-[#C7EBD4] text-[#032517]", title: "Pilih WiFi & Masukkan Password", desc: "Pilih jaringan WiFi sekitar dari daftar scan otomatis atau ketik nama SSID serta password WiFi baru Anda." },
+      { num: "04", icon: <FaCheckCircle />, iconBg: "bg-[#C7EBD4] text-[#10B981]", title: "Tersimpan Permanen di Flash NVS", desc: "Klik Simpan & Hubungkan. ESP32 menyimpan WiFi baru di memori permanen NVS dan langsung me-restart ke jaringan baru." },
     ],
   };
 
@@ -745,9 +745,9 @@ function Demo() {
           </h2>
           <div className="w-16 h-1 bg-[#C0392B] mx-auto mt-4 rounded-full" />
           <p className="text-[#424843] mt-3 text-xs sm:text-base max-w-2xl mx-auto">
-            Simulator di bawah ini menjalankan aplikasi <strong>Ranum versi terbaru</strong> yang sudah
-            terhubung langsung ke Relay Server HTTPS (<span className="font-semibold text-[#032517]">https://151.245.85.254.nip.io</span>) dan khusus
-            menggunakan stream <strong>ESP32-CAM</strong>.
+            Simulator di bawah ini menjalankan aplikasi <strong>Ranum versi terbaru</strong> yang terhubung
+            ke Relay Server VPS HTTPS (<span className="font-semibold text-[#032517]">https://151.245.85.254.nip.io</span>) untuk
+            pemantauan stream <strong>ESP32-CAM</strong>, kontrol <strong>Servo Pan-Tilt halus</strong>, serta <strong>Auto-Scan 12 titik</strong> secara langsung.
           </p>
         </AnimatedSection>
 
@@ -975,7 +975,7 @@ function FAQ() {
   const faqs = [
     {
       q: "Bagaimana cara mengganti nama WiFi dan password pada kedua ESP32 jika pindah lokasi atau jaringan lag?",
-      a: "Sangat mudah tanpa perlu koding ulang. Jika WiFi lama tidak terjangkau selama 12 detik (atau Anda menekan tombol BOOT 3 detik pada ESP32 Servo), alat akan memancarkan hotspot 'Ranum-CAM-Setup' dan 'Ranum-Servo-Setup'. Sambungkan HP ke hotspot tersebut, buka http://192.168.4.1 di browser, lalu pilih WiFi baru dan masukkan password-nya.",
+      a: "Sangat mudah tanpa perlu koding ulang. Saat ESP32 terhubung ke WiFi, Anda cukup membuka alamat IP lokal ESP32 di browser (atau http://ranum-cam.local dan http://ranum-servo.local) untuk mengganti SSID & password kapan saja. Jika WiFi lama mati/tidak terjangkau, alat otomatis memancarkan hotspot 'Ranum-CAM-Setup' dan 'Ranum-Servo-Setup' yang dapat diakses melalui http://192.168.4.1.",
     },
     {
       q: "Mengapa aplikasi hanya menggunakan kamera ESP32-CAM dan bukan kamera internal HP?",
