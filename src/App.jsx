@@ -746,7 +746,7 @@ function Demo() {
           <div className="w-16 h-1 bg-[#C0392B] mx-auto mt-4 rounded-full" />
           <p className="text-[#424843] mt-3 text-xs sm:text-base max-w-2xl mx-auto">
             Simulator di bawah ini menjalankan aplikasi <strong>Ranum versi terbaru</strong> yang sudah
-            terhubung langsung ke Relay Server HTTPS (<span className="font-semibold text-[#032517]">https://personal-estimated-signing-difficulties.trycloudflare.com</span>) dan khusus
+            terhubung langsung ke Relay Server HTTPS (<span className="font-semibold text-[#032517]">https://151.245.85.254.nip.io</span>) dan khusus
             menggunakan stream <strong>ESP32-CAM</strong>.
           </p>
         </AnimatedSection>
